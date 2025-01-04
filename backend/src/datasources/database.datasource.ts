@@ -1,11 +1,24 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
+// const config = {
+//   name: 'database',
+//   connector: 'postgresql',
+//   url: '',
+//   host: 'db',
+//   port: 5432,
+//   user: 'postgres',
+//   password: 'psql',
+//   database: 'pizza',
+// };
+
+
+// для локальной проверки
 const config = {
   name: 'database',
   connector: 'postgresql',
   url: '',
-  host: 'db',
+  host: 'localhost', 
   port: 5432,
   user: 'postgres',
   password: 'psql',
@@ -17,7 +30,10 @@ const config = {
 // gracefully. The `stop()` method is inherited from `juggler.DataSource`.
 // Learn more at https://loopback.io/doc/en/lb4/Life-cycle.html
 @lifeCycleObserver('datasource')
-export class DatabaseDataSource extends juggler.DataSource implements LifeCycleObserver {
+export class DatabaseDataSource
+  extends juggler.DataSource
+  implements LifeCycleObserver
+{
   static dataSourceName = 'database';
   static readonly defaultConfig = config;
 
