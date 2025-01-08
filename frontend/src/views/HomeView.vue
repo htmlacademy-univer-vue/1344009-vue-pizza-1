@@ -30,6 +30,7 @@
 
 <script setup>
 import { reactive, ref } from "vue";
+//Подключите все компоненты модуля конструктора на страницу HomeView.vue реализовал в таксках до этого
 import ContentDough from "../modules/constructor/ContentDough.vue";
 import ContentDiameter from "../modules/constructor/ContentDiameter.vue";
 import ContentIngredients from "../modules/constructor/ContentIngredients.vue";
