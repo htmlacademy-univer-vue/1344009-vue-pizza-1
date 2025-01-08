@@ -22,6 +22,29 @@
                 </span>
               </app-drag>
               <AppCounter v-model="fillings[ingredient.name_eng]" />
+              <!-- <div class="counter counter--orange ingredients__counter">
+                <button
+                  type="button"
+                  class="counter__button counter__button--minus"
+                  :disabled="isDisabledMinus(ingredient.name_eng)"
+                  @click="minusHandler(ingredient.name_eng)"
+                >
+                  <span class="visually-hidden">Меньше</span>
+                </button>
+                <input
+                  type="text"
+                  name="counter"
+                  class="counter__input"
+                  :value="getFillingValue(ingredient.name_eng)"
+                />
+                <button
+                  type="button"
+                  class="counter__button counter__button--plus"
+                  @click="plusHandler(ingredient.name_eng)"
+                >
+                  <span class="visually-hidden">Больше</span>
+                </button>
+              </div> -->
             </li>
           </ul>
         </div>
@@ -68,6 +91,14 @@ console.log(fillings.value["mushrooms"]);
 function getFillingStyle(ingredient_name) {
   return `filling--${ingredient_name}`;
 }
+
+// function getFillingValue(fillingName) {
+//   if (props.fillings.hasOwnProperty(fillingName)) {
+//     return props.fillings[fillingName];
+//   } else {
+//     return "0";
+//   }
+// }
 </script>
 
 <style lang="scss" scoped>
