@@ -12,13 +12,12 @@ const config = {
   database: 'pizza',
 };
 
-
 // для локальной проверки
 // const config = {
 //   name: 'database',
 //   connector: 'postgresql',
 //   url: '',
-//   host: 'localhost', 
+//   host: 'localhost',
 //   port: 5432,
 //   user: 'postgres',
 //   password: 'psql',
