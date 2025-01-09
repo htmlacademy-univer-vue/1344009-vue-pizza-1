@@ -2,6 +2,9 @@
 require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
+  rules: {
+    "prettier/prettier": ["error", { endOfLine: "off" }],
+  },
   root: true,
   extends: [
     "plugin:vue/vue3-recommended",
