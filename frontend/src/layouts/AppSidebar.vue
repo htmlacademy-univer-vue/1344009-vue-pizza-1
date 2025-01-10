@@ -1,20 +1,38 @@
 <template>
   <div class="layout__sidebar sidebar">
-    <a href="index.html" class="logo layout__logo">
+    <router-link :to="{ name: 'home' }" class="logo layout__logo">
       <img
         src="@/assets/img/logo.svg"
         alt="V!U!E! Pizza logo"
         width="90"
         height="40"
       />
-    </a>
+    </router-link>
 
-    <a class="layout__link" href="#">История заказов</a>
-    <a class="layout__link layout__link--active" href="#">Мои данные</a>
+    <router-link
+      :to="{ name: 'orders' }"
+      :class="[
+        'layout__link',
+        route.name === 'orders' ? 'layout__link--active' : '',
+      ]"
+      >История заказов</router-link
+    >
+    <router-link
+      :to="{ name: 'profile' }"
+      :class="[
+        'layout__link',
+        route.name === 'profile' ? 'layout__link--active' : '',
+      ]"
+      >Мои данные</router-link
+    >
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+</script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/app.scss";
@@ -50,23 +68,16 @@
 
 .layout__link {
   @include b-s14-h16;
-
   display: block;
-
   padding: 8px 14px;
-
   transition: 0.3s;
-
   color: $black;
-
   &--active {
     background-color: rgba($green-500, 0.1);
   }
-
   &:hover {
     background-color: rgba($green-500, 0.2);
   }
-
   &:active {
     color: rgba($black, 0.5);
   }

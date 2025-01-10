@@ -12,7 +12,7 @@ const config = {
   database: 'pizza',
 };
 
-// // для локальной проверки
+// для локальной проверки
 // const config = {
 //   name: 'database',
 //   connector: 'postgresql',
