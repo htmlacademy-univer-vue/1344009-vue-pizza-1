@@ -16,7 +16,7 @@ const translateNameToEng = (name) => {
   const translation = translations[name];
   if (!translation) {
     console.warn(`Translation for "${name}" not found.`);
-    return name; // Возвращаем исходное значение, если перевод не найден
+    return name;
   }
   return translation;
 };
@@ -25,7 +25,7 @@ const translateNameToRus = (name) => {
   const translation = getKey(translations, name);
   if (!translation) {
     console.warn(`Translation for "${name}" not found.`);
-    return name; // Возвращаем исходное значение, если перевод не найден
+    return name;
   }
   return translation;
 };

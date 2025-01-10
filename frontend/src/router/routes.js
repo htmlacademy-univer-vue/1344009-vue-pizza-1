@@ -1,3 +1,5 @@
+import { isAuthenticated } from "../middlewares/isAuthenticated";
+
 export default [
   {
     path: "/",
@@ -19,6 +21,7 @@ export default [
   },
   {
     path: "/user",
+    meta: { middlewares: [isAuthenticated] },
     children: [
       {
         path: "profile",
@@ -31,5 +34,9 @@ export default [
         component: () => import("../views/OrdersView.vue"),
       },
     ],
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: { name: "home" },
   },
 ];

@@ -3,13 +3,9 @@
     <form action="#" method="post">
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
-
         <ContentDough />
-
         <ContentDiameter />
-
         <ContentIngredients />
-
         <ContentPizza />
       </div>
     </form>
@@ -21,10 +17,16 @@ import ContentDough from "../modules/constructor/ContentDough.vue";
 import ContentDiameter from "../modules/constructor/ContentDiameter.vue";
 import ContentIngredients from "../modules/constructor/ContentIngredients.vue";
 import ContentPizza from "../modules/constructor/ContentPizza.vue";
+import { useDataStore } from "../stores";
+const dataStore = useDataStore();
+
+dataStore.fetchDough();
+dataStore.fetchIngredients();
+dataStore.fetchSauces();
+dataStore.fetchSizes();
 </script>
 
 <style lang="scss" scoped>
-//Все стили были добавлены на этапе module2-task2
 @import "@/assets/scss/app.scss";
 // content
 .content {

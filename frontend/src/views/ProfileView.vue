@@ -100,7 +100,7 @@
             <button
               type="button"
               class="button button--transparent"
-              @click="deleteAddress(address.id)"
+              @click="deleteAddress(editingAddress.id)"
             >
               Удалить
             </button>
@@ -194,7 +194,7 @@
           <button
             type="button"
             class="button button--transparent"
-            @click="cancelEdit"
+            @click="cancelAddAddress"
           >
             Отменить
           </button>
@@ -228,18 +228,18 @@ const editingAddress = ref(null);
 
 const addingNewAddress = ref(false);
 const newAddress = ref({
-  id: null,
   name: "",
   street: "",
   building: "",
   flat: "",
   comment: "",
+  userId: profileStore.id,
 });
 
 // Методы
 function editAddress(address) {
   editingAddressId.value = address.id;
-  editingAddress.value = { ...address };
+  editingAddress.value = { ...address }; // Копия адреса для редактирования
 }
 
 function cancelEdit() {
@@ -253,19 +253,19 @@ function deleteAddress(addressId) {
 }
 
 function saveEdit() {
-  profileStore.editAddress(editingAddressId.value, editingAddress.value);
+  profileStore.updateAddress(editingAddress.value);
   cancelEdit();
 }
 
 function openAddAddressForm() {
   addingNewAddress.value = true;
   newAddress.value = {
-    id: Date.now(),
     name: "",
     street: "",
     building: "",
     flat: "",
     comment: "",
+    userId: profileStore.id,
   };
 }
 
@@ -278,6 +278,8 @@ function saveNewAddress() {
   profileStore.addAddress(newAddress.value);
   cancelAddAddress();
 }
+
+profileStore.fetchAddresses();
 </script>
 
 <style lang="scss" scoped>
@@ -327,9 +329,12 @@ function saveNewAddress() {
 
 .address-form {
   $bl: &;
+
   position: relative;
+
   padding-top: 0;
   padding-bottom: 26px;
+
   &--opened {
     #{$bl}__header {
       padding: 16px;
@@ -338,6 +343,7 @@ function saveNewAddress() {
 
   p {
     @include r-s16-h19;
+
     margin-top: 0;
     margin-bottom: 16px;
     padding: 0 16px;
@@ -345,7 +351,9 @@ function saveNewAddress() {
 
   small {
     @include l-s11-h13;
+
     display: block;
+
     padding: 0 16px;
   }
 }
@@ -354,6 +362,7 @@ function saveNewAddress() {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+
   width: 80%;
   padding: 16px;
 }
@@ -361,6 +370,7 @@ function saveNewAddress() {
 .address-form__input {
   width: 100%;
   margin-bottom: 16px;
+
   &--size {
     &--normal {
       width: 60.5%;

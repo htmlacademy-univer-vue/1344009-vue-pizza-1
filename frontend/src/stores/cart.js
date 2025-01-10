@@ -2,9 +2,12 @@ import { defineStore } from "pinia";
 import { useDataStore } from "./data";
 import { getItemByIdOrDefault } from "../helpers/get-item-by-id-or-default";
 import { pizzaPrice } from "../helpers/pizza-price";
+import OrderService from "../services/OrderService";
+import { useProfileStore } from "./profile";
 
 export const useCartStore = defineStore("cart", {
   state: () => ({
+    receivingOrderType: -1,
     phone: "",
     address: {
       street: "",
@@ -12,28 +15,8 @@ export const useCartStore = defineStore("cart", {
       flat: "",
       comment: "",
     },
-    pizzas: [
-      {
-        index: 0,
-        name: "test_pizza",
-        sauceId: 1,
-        doughId: 1,
-        sizeId: 1,
-        quantity: 1,
-        ingredients: [
-          {
-            ingredientId: 1,
-            quantity: 3,
-          },
-        ],
-      },
-    ],
-    misc: [
-      {
-        miscId: 1,
-        quantity: 1,
-      },
-    ],
+    pizzas: [],
+    misc: [],
   }),
   getters: {
     totalCartPrice: (state) => {
@@ -64,6 +47,27 @@ export const useCartStore = defineStore("cart", {
     },
   },
   actions: {
+    async createOrder() {
+      const profileStore = useProfileStore();
+      await OrderService.create({
+        userId: profileStore.id || null,
+        phone: this.phone,
+        address: this.receivingOrderType <= 0 ? null : this.address,
+        addressId: 39,
+        pizzas: this.pizzas.map((e) => ({
+          name: e.name,
+          sauceId: e.sauceId,
+          doughId: e.doughId,
+          sizeId: e.sizeId,
+          quantity: e.quantity,
+          ingredients: e.ingredients.map((ingredient) => ({
+            ingredientId: ingredient.ingredientId,
+            quantity: ingredient.quantity,
+          })),
+        })),
+        misc: this.misc,
+      });
+    },
     savePizza(pizza, quantity) {
       const q = quantity || 1;
       const { index, ...pizzaData } = pizza;
@@ -120,6 +124,9 @@ export const useCartStore = defineStore("cart", {
         }
       }
     },
+    setReceivingOrderType(type) {
+      this.receivingOrderType = type;
+    },
     setPhone(phone) {
       this.phone = phone;
     },
@@ -138,6 +145,18 @@ export const useCartStore = defineStore("cart", {
     },
     setComment(comment) {
       this.address.street = comment;
+    },
+    setDefaultState() {
+      this.receivingOrderType = -1;
+      this.phone = "";
+      this.address = {
+        street: "",
+        building: "",
+        flat: "",
+        comment: "",
+      };
+      this.pizzas = [];
+      this.misc = [];
     },
   },
 });

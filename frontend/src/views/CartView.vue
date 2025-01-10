@@ -1,5 +1,5 @@
 <template>
-  <form action="test.html" method="post" class="layout-form">
+  <form class="layout-form">
     <main class="content cart">
       <div class="container">
         <div class="cart__title">
@@ -10,11 +10,13 @@
           <p>В корзине нет ни одного товара</p>
         </div>
 
-        <CartList v-else />
+        <div v-else>
+          <CartList />
 
-        <CartAdditional />
+          <CartAdditional />
 
-        <CartForm />
+          <CartForm />
+        </div>
       </div>
     </main>
     <section class="footer">
@@ -33,19 +35,57 @@
       </div>
 
       <div class="footer__submit">
-        <button type="submit" class="button">Оформить заказ</button>
+        <button
+          type="button"
+          class="button"
+          :disabled="isSubmitting || !cartStore.pizzas.length"
+          @click="handleSubmit"
+        >
+          {{ isSubmitting ? "Отправка..." : "Оформить заказ" }}
+        </button>
       </div>
+      <SuccessPopup v-if="isPopupVisible" />
     </section>
   </form>
 </template>
 
 <script setup>
-import { useCartStore } from "../stores";
+import { ref } from "vue";
+import {
+  useCartStore,
+  useProfileStore,
+  useDataStore,
+  usePizzaStore,
+} from "../stores";
 import CartList from "../modules/cart/CartList.vue";
 import CartAdditional from "../modules/cart/CartAdditional.vue";
 import CartForm from "../modules/cart/CartForm.vue";
+import SuccessPopup from "../modules/cart/SuccessPopup.vue";
 
 const cartStore = useCartStore();
+const dataStore = useDataStore();
+const profileStore = useProfileStore();
+const isPopupVisible = ref(false);
+const isSubmitting = ref(false);
+
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    await cartStore.createOrder();
+    cartStore.setDefaultState();
+    isPopupVisible.value = true; // Показываем Popup
+    useCartStore().setDefaultState();
+    usePizzaStore().setDefault();
+  } catch (error) {
+    console.error("Ошибка при отправке заказа:", error);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+dataStore.fetchMisc();
+profileStore.fetchAddresses();
 </script>
 
 <style lang="scss" scoped>
