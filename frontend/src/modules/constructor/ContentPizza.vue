@@ -1,0 +1,265 @@
+<template>
+  <div class="content__pizza">
+    <label class="input">
+      <span class="visually-hidden">Название пиццы</span>
+      <input
+        type="text"
+        name="pizza_name"
+        placeholder="Введите название пиццы"
+        :value="pizzaStore.name"
+        @input="nameUpdate($event.target.value)"
+      />
+    </label>
+    <app-drop @drop="moveFilling">
+      <div class="content__constructor">
+        <div
+          class="pizza"
+          :class="`pizza--foundation--${dough().name_eng}-${sauce().name_eng}`"
+        >
+          <div class="pizza__wrapper">
+            <template
+              v-for="filling in Object.getOwnPropertyNames(fillings())"
+              :key="filling.id"
+            >
+              <div
+                class="pizza__filling"
+                :class="`pizza__filling--${
+                  fillings()[filling] !== 0 ? filling : ''
+                } ${fillingAmountStyle(fillings()[filling])}`"
+              ></div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </app-drop>
+
+    <div class="content__result">
+      <p>Итого: {{ pizzaStore.price }} ₽</p>
+      <router-link :to="{ name: 'cart' }">
+        <button type="button" class="button" @click="savePizza()">
+          Готовьте!
+        </button>
+      </router-link>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useDataStore } from "../../stores";
+import { usePizzaStore } from "../../stores";
+import { useCartStore } from "../../stores";
+import { transformIngredients } from "../../helpers";
+
+const dataStore = useDataStore();
+const pizzaStore = usePizzaStore();
+const cartStore = useCartStore();
+const sauce = () => {
+  const foundObject = dataStore.sauce.find((s) => s.id === pizzaStore.sauceId);
+  return foundObject;
+};
+
+const dough = () => {
+  const foundObject = dataStore.dough.find((d) => d.id === pizzaStore.doughId);
+  return foundObject;
+};
+
+const fillings = () => {
+  return transformIngredients(pizzaStore.ingredients, dataStore.ingredients);
+};
+
+import AppDrop from "../../common/components/AppDrop.vue";
+
+function moveFilling(filling_id) {
+  pizzaStore.incrementIngredientQuantity(filling_id);
+}
+
+function fillingAmountStyle(amount) {
+  switch (amount) {
+    case 2:
+      return "pizza__filling--second";
+    case 3:
+      return "pizza__filling--third";
+    default:
+      return "";
+  }
+}
+
+function savePizza() {
+  cartStore.savePizza(pizzaStore.$state);
+  pizzaStore.setDefault();
+}
+
+function nameUpdate(newName) {
+  pizzaStore.setName(newName);
+}
+</script>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/app.scss";
+.content__pizza {
+  width: 373px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.content__constructor {
+  width: 315px;
+  margin-top: 25px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.content__result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  p {
+    font-size: 24px;
+    line-height: 28px;
+    margin: 0;
+  }
+  button {
+    margin-left: 12px;
+    padding: 16px 45px;
+  }
+}
+// pizza
+.pizza {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  &--foundation--large-creamy {
+    background-image: url("@/assets/img/foundation/big-creamy.svg");
+  }
+  &--foundation--large-tomato {
+    background-image: url("@/assets/img/foundation/big-tomato.svg");
+  }
+  &--foundation--light-creamy {
+    background-image: url("@/assets/img/foundation/small-creamy.svg");
+  }
+  &--foundation--light-tomato {
+    background-image: url("@/assets/img/foundation/small-tomato.svg");
+  }
+}
+.pizza__wrapper {
+  width: 100%;
+  padding-bottom: 100%;
+}
+.pizza__filling {
+  $bl: &;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  &::before,
+  &::after {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    content: "";
+    background-image: inherit;
+  }
+  &--second {
+    &::before {
+      display: block;
+      transform: rotate(45deg);
+    }
+  }
+  &--third {
+    &::before {
+      display: block;
+      transform: rotate(45deg);
+    }
+    &::after {
+      display: block;
+      transform: rotate(-45deg);
+    }
+  }
+  &--ananas,
+  &--ananas.pizza__filling--second::before,
+  &--ananas.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/ananas.svg");
+  }
+  &--bacon,
+  &--bacon.pizza__filling--second::before,
+  &--bacon.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/bacon.svg");
+  }
+  &--blue_cheese,
+  &--blue.pizza__filling--second::before,
+  &--blue.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/blue_cheese.svg");
+  }
+  &--cheddar,
+  &--cheddar.pizza__filling--second::before,
+  &--cheddar.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/cheddar.svg");
+  }
+  &--chile,
+  &--chile.pizza__filling--second::before,
+  &--chile.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/chile.svg");
+  }
+  &--ham,
+  &--ham.pizza__filling--second::before,
+  &--ham.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/ham.svg");
+  }
+  &--jalapeno,
+  &--jalapeno.pizza__filling--second::before,
+  &--jalapeno.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/jalapeno.svg");
+  }
+  &--mozzarella,
+  &--mozzarella.pizza__filling--second::before,
+  &--mozzarella.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/mozzarella.svg");
+  }
+  &--mushrooms,
+  &--mushrooms.pizza__filling--second::before,
+  &--mushrooms.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/mushrooms.svg");
+  }
+  &--olives,
+  &--olives.pizza__filling--second::before,
+  &--olives.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/olives.svg");
+  }
+  &--onion,
+  &--onion.pizza__filling--second::before,
+  &--onion.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/onion.svg");
+  }
+  &--parmesan,
+  &--parmesan.pizza__filling--second::before,
+  &--parmesan.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/parmesan.svg");
+  }
+  &--salami,
+  &---salami.pizza__filling--second::before,
+  &---salami.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/salami.svg");
+  }
+  &--salmon,
+  &--salmon.pizza__filling--second::before,
+  &--salmon.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/salmon.svg");
+  }
+  &--tomatoes,
+  &--tomatoes.pizza__filling--second::before,
+  &--tomatoes.pizza__filling--third::after {
+    background-image: url("@/assets/img/filling-big/tomatoes.svg");
+  }
+}
+</style>
