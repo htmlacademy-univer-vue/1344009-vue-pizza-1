@@ -52,10 +52,12 @@ const isDisabledPlus = () => {
 
 function minusHandler() {
   emit("update:modelValue", props.modelValue - 1);
+  emit("animate");
 }
 
 function plusHandler() {
   emit("update:modelValue", props.modelValue + 1);
+  emit("animate");
 }
 </script>
 

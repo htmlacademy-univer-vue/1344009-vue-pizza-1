@@ -2,15 +2,13 @@
   <div class="content__ingredients">
     <div class="sheet">
       <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
-
       <div class="sheet__content ingredients">
         <IngredientsSauce />
-
         <div class="ingredients__filling">
           <p>Начинка:</p>
           <ul class="ingredients__list">
             <li
-              v-for="ingredient in useDataStore().ingredients"
+              v-for="ingredient in ingredients"
               :key="ingredient.id"
               class="ingredients__item"
             >
@@ -20,8 +18,13 @@
               >
                 <span
                   class="filling"
-                  :class="getFillingStyle(ingredient.name_eng)"
-                  >{{ ingredient.name }}
+                  :class="[
+                    getFillingStyle(ingredient.name_eng),
+                    { animate: activeIngredient === ingredient.name_eng },
+                  ]"
+                  @animationend="resetAnimation(ingredient.name_eng)"
+                >
+                  {{ ingredient.name }}
                 </span>
               </app-drag>
               <AppCounter
@@ -31,6 +34,7 @@
                 @update:model-value="
                   (newValue) => handleUpdate(ingredient.name_eng, newValue)
                 "
+                @animate="triggerAnimation(ingredient.name_eng)"
               />
             </li>
           </ul>
@@ -41,54 +45,81 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import IngredientsSauce from "./IngredientsSauce.vue";
 import AppDrag from "../../common/components/AppDrag.vue";
 import AppCounter from "@/common/components/AppCounter.vue";
-import { transformIngredients } from "../../helpers";
-import { reverseTransformIngredients } from "../../helpers";
-
-import { useDataStore } from "../../stores";
-import { usePizzaStore } from "../../stores";
+import {
+  transformIngredients,
+  reverseTransformIngredients,
+} from "../../helpers";
+import { useDataStore, usePizzaStore } from "../../stores";
 
 const pizzaStore = usePizzaStore();
+const activeIngredient = ref(null);
+
+const ingredients = computed(() => useDataStore().ingredients);
 
 const fillings = computed({
   get() {
-    return transformIngredients(
-      pizzaStore.ingredients,
-      useDataStore().ingredients
-    );
+    return transformIngredients(pizzaStore.ingredients, ingredients.value);
+  },
+  set(newFillings) {
+    const result = reverseTransformIngredients(newFillings, ingredients.value);
+    pizzaStore.setIngredients(result);
   },
 });
 
 const handleUpdate = (ingredientName, newValue) => {
-  const newIngredients = { ...fillings, [ingredientName]: newValue };
-  const result = reverseTransformIngredients(
-    newIngredients._value,
-    useDataStore().ingredients
-  );
-  pizzaStore.setIngredients(result);
+  fillings.value = { ...fillings.value, [ingredientName]: newValue };
 };
 
-function isDragable(ingredient_id) {
+const isDragable = (ingredient_id) => {
   const ingredient = pizzaStore.ingredients.find(
     (i) => i.ingredientId === ingredient_id
   );
-  if (ingredient) {
-    return ingredient.quantity > 2 ? false : true;
-  } else {
-    return true;
-  }
-}
+  return !ingredient || ingredient.quantity <= 2;
+};
 
-function getFillingStyle(ingredient_name_eng) {
-  return `filling--${ingredient_name_eng}`;
-}
+const getFillingStyle = (ingredient_name_eng) =>
+  `filling--${ingredient_name_eng}`;
+
+const triggerAnimation = (ingredientName) => {
+  activeIngredient.value = null; // Сбросить перед повторной анимацией
+  requestAnimationFrame(() => {
+    activeIngredient.value = ingredientName;
+  });
+};
+
+const resetAnimation = (ingredientName) => {
+  if (activeIngredient.value === ingredientName) {
+    activeIngredient.value = null;
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/app.scss";
+
+.filling {
+  position: relative;
+  &.animate::before {
+    animation: scale-animation 0.3s ease-in-out;
+  }
+}
+
+@keyframes scale-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 // ingredients
 .content__ingredients {
   width: 527px;

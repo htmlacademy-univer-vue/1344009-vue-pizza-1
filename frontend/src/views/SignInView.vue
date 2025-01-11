@@ -1,4 +1,5 @@
 <template>
+  <transition name="fade">
   <div class="sign-form">
     <router-link :to="{ name: 'home' }" class="close close--white">
       <span class="visually-hidden">Закрыть форму авторизации</span>
@@ -39,6 +40,7 @@
       </div>
     </form>
   </div>
+</transition>
 </template>
 
 <script setup>
@@ -64,12 +66,10 @@ const password = ref("");
 const validations = ref(setEmptyValidations());
 const serverErrorMessage = ref(null);
 watch(email, () => {
-  // Очищаем поля ошибок при вводе новых данных
   if (serverErrorMessage.value) serverErrorMessage.value = null;
   if (validations.value.email.error) clearValidationErrors(validations.value);
 });
 watch(password, () => {
-  // Очищаем поля ошибок при вводе новых данных
   if (serverErrorMessage.value) serverErrorMessage.value = null;
   if (validations.value.password.error)
     clearValidationErrors(validations.value);
@@ -84,13 +84,10 @@ async function login() {
     return;
   }
   const responseMessage = await profileStore.login(email.value, password.value);
-  // Проверяем, если возвращается статус не 'ok', то показываем ошибку сервера
   if (responseMessage !== "ok") {
     serverErrorMessage.value = responseMessage;
   } else {
-    // Получаем данные пользователя
     await profileStore.whoAmI();
-    // Если логин без ошибок, перенаправляем на главную страницу
     await router.push({ name: "home" });
   }
 }
@@ -98,6 +95,16 @@ async function login() {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/app.scss";
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 .sign-form {
   @include pf_center-all;

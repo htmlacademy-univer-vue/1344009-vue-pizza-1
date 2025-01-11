@@ -1,6 +1,7 @@
 export default (router) => {
   router.beforeEach(async (to, from) => {
     const middlewares = to.meta.middlewares;
+    // Если у маршрута нет мидлваров, переходим на страницу
     if (!middlewares) {
       return true;
     }
