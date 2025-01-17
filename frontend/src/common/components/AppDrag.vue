@@ -1,6 +1,6 @@
 <template>
   <div
-    :draggable="true"
+    :draggable="props.isDragable"
     @dragstart.self="onDrag"
     @dragover.prevent
     @dragenter.prevent
@@ -14,8 +14,12 @@ import { DATA_TRANSFER_PAYLOAD, MOVE } from "../constants";
 
 const props = defineProps({
   transferData: {
-    type: Object,
+    type: String,
     required: true,
+  },
+  isDragable: {
+    type: Boolean,
+    default: true,
   },
 });
 

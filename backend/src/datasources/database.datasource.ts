@@ -1,28 +1,28 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
-// const config = {
-//   name: 'database',
-//   connector: 'postgresql',
-//   url: '',
-//   host: 'db',
-//   port: 5432,
-//   user: 'postgres',
-//   password: 'psql',
-//   database: 'pizza',
-// };
-
-// для локальной проверки
 const config = {
   name: 'database',
   connector: 'postgresql',
   url: '',
-  host: 'localhost',
+  host: 'db',
   port: 5432,
   user: 'postgres',
   password: 'psql',
   database: 'pizza',
 };
+
+// // для локальной проверки
+// const config = {
+//   name: 'database',
+//   connector: 'postgresql',
+//   url: '',
+//   host: 'localhost',
+//   port: 5432,
+//   user: 'postgres',
+//   password: 'psql',
+//   database: 'pizza',
+// };
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
