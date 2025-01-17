@@ -3,8 +3,11 @@
     <form action="#" method="post">
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
+
         <ContentDough :dough="dough" @set-dough="setDough" />
+
         <ContentDiameter :diameter="diameter" @set-diameter="setDiameter" />
+
         <ContentIngredients
           :sauce="sauce"
           :set-sauce="setSauce"
@@ -12,6 +15,7 @@
           @set-fillings="setFillings"
           @drop="moveFilling"
         />
+
         <ContentPizza
           :pizza-state="pizzaState"
           :dough="dough"
@@ -99,7 +103,6 @@ const pizzaState = reactive({
 </script>
 
 <style lang="scss" scoped>
-
 @import "@/assets/scss/app.scss";
 // content
 .content {
