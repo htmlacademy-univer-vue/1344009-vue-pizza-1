@@ -1,22 +1,19 @@
-import { defineStore } from "@pinia";
-import { useDataStore } from "@/stores/dataStore";
-import { pizzaPrice } from "../helpers";
-
-const getItemByIdOrDefault = (dataArray, id) => {
-  return dataArray.find((item) => item.id === id) ?? dataArray[0];
-};
+import { defineStore } from "pinia";
+import { useDataStore } from "./data";
+import { pizzaPrice, getItemByIdOrDefault } from "../helpers";
+import DoughService from "../services/DoughService";
 
 export const usePizzaStore = defineStore("pizza", {
   state: () => ({
     index: null,
     name: "",
-    sauceId: 0,
-    doughId: 0,
-    sizeId: 0,
+    sauceId: 1,
+    doughId: 1,
+    sizeId: 1,
     ingredients: [
       {
-        ingredientId: 0,
-        quantity: 0,
+        ingredientId: 1,
+        quantity: 3,
       },
     ],
   }),
@@ -43,5 +40,93 @@ export const usePizzaStore = defineStore("pizza", {
     },
     price: (state) => pizzaPrice(state),
   },
-  actions: {},
+  actions: {
+    async fetchDough() {
+      this.dough = await DoughService.fetch();
+    },
+    setIndex(index) {
+      this.index = index;
+    },
+    setName(name) {
+      this.name = name;
+    },
+    setSauce(sauceId) {
+      this.sauceId = sauceId;
+    },
+    setDough(doughId) {
+      this.doughId = doughId;
+    },
+    setSize(sizeId) {
+      this.sizeId = sizeId;
+    },
+    setIngredients(ingredients) {
+      this.ingredients = ingredients;
+    },
+    addIngredient(ingredientId) {
+      this.ingredients.push({
+        ingredientId,
+        quantity: 1,
+      });
+    },
+    incrementIngredientQuantity(ingredientId) {
+      const ingredient = this.ingredients.find(
+        (item) => item.ingredientId === ingredientId
+      );
+      if (ingredient) {
+        ingredient.quantity++;
+      } else {
+        this.addIngredient(ingredientId);
+      }
+    },
+    setIngredientQuantity(ingredientId, count) {
+      const ingredientIdx = this.ingredients.findIndex(
+        (item) => item.ingredientId === ingredientId
+      );
+
+      if (ingredientIdx === -1) {
+        if (count > 0) {
+          this.addIngredient(ingredientId);
+        }
+        return;
+      }
+
+      if (count === 0) {
+        this.ingredients.splice(ingredientIdx, 1);
+      } else {
+        this.ingredients[ingredientIdx].quantity = count;
+      }
+    },
+
+    removeIngredient(ingredientId) {
+      const id = this.ingredients.findIndex(
+        (item) => item.ingredientId === ingredientId
+      );
+      if (id !== -1) {
+        this.ingredients.splice(id, 1);
+      }
+    },
+
+    loadPizza(pizza) {
+      this.index = pizza.index;
+      this.name = pizza.name;
+      this.sauceId = pizza.sauceId;
+      this.doughId = pizza.doughId;
+      this.sizeId = pizza.sizeId;
+      this.ingredients = pizza.ingredients;
+    },
+
+    setDefault() {
+      this.index = null;
+      this.name = "";
+      this.sauceId = 1;
+      this.doughId = 1;
+      this.sizeId = 1;
+      this.ingredients = [
+        {
+          ingredientId: 1,
+          quantity: 3,
+        },
+      ];
+    },
+  },
 });

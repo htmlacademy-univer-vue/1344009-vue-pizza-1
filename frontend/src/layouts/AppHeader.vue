@@ -1,25 +1,64 @@
 <template>
   <header class="header">
     <div class="header__logo">
-      <a href="index.html" class="logo">
+      <router-link :to="{ name: 'home' }" class="logo">
         <img
           src="@/assets/img/logo.svg"
           alt="V!U!E! Pizza logo"
           width="90"
           height="40"
         />
-      </a>
+      </router-link>
     </div>
     <div class="header__cart">
-      <a href="cart.html">0 ₽</a>
+      <router-link :to="{ name: 'cart' }"
+        >{{ cartStore.totalCartPrice }} ₽</router-link
+      >
     </div>
-    <div class="header__user">
-      <a href="#" class="header__login"><span>Войти</span></a>
+    <div v-if="useProfileStore().getName === ''" class="header__user">
+      <router-link :to="{ name: 'login' }" class="header__login"
+        ><span>Войти</span></router-link
+      >
+    </div>
+    <div v-else class="header__user">
+      <router-link :to="{ name: 'profile' }">
+        <picture>
+          <source
+            type="image/webp"
+            :srcset="
+              useProfileStore().getAvatar +
+              '.webp 1x,' +
+              useProfileStore().getAvatar +
+              '@2x.webp 2x'
+            "
+          />
+          <img
+            :src="useProfileStore().getAvatar + '.jpg'"
+            :srcset="useProfileStore().getAvatar + '@2x.jpg'"
+            :alt="useProfileStore().getName"
+            width="32"
+            height="32"
+          />
+        </picture>
+        <span>{{ useProfileStore().getName }}</span>
+      </router-link>
+      <router-link
+        :to="{ name: 'home' }"
+        class="header__logout"
+        @click="useProfileStore().logout()"
+      >
+        <span>Выйти</span>
+      </router-link>
     </div>
   </header>
 </template>
 
-<script setup></script>
+<script setup>
+import { useCartStore } from "../stores/cart";
+import { useProfileStore } from "../stores";
+
+const cartStore = useCartStore();
+</script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/app.scss";
@@ -48,7 +87,7 @@
     transition: 0.3s;
     color: $white;
     background-color: $green-500;
-    background-image: url("../img/cart.svg");
+    background-image: url("../assets/img/cart.svg");
     background-repeat: no-repeat;
     background-position: 20px center;
     background-size: 29px 27px;
@@ -107,7 +146,7 @@
     margin-right: 8px;
     content: "";
     vertical-align: middle;
-    background: url(../img/login.svg) no-repeat center;
+    background: url(../assets/img/login.svg) no-repeat center;
     background-size: auto 50%;
   }
 }
@@ -119,7 +158,7 @@
     margin-left: 8px;
     content: "";
     vertical-align: middle;
-    background: url(../img/login.svg) no-repeat center;
+    background: url(../assets/img/login.svg) no-repeat center;
     background-size: auto 50%;
   }
 }

@@ -14,12 +14,11 @@ function onDrop({ dataTransfer }) {
     return;
   }
   const payload = dataTransfer.getData(DATA_TRANSFER_PAYLOAD);
-  console.log(payload);
   if (payload) {
     const transferData = JSON.parse(
       dataTransfer.getData(DATA_TRANSFER_PAYLOAD)
     );
-    emit("drop", transferData);
+    emit("drop", parseInt(transferData));
   }
 }
 </script>
